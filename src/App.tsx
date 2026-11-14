@@ -1,4 +1,3 @@
-// Assignment 3: change the state shape, add actions, add a filter bar (see the handout).
 import { useReducer } from 'react'
 import type { Dispatch } from 'react'
 import { taskReducer, initialState, type Task, type Action } from './taskReducer'
@@ -28,10 +27,11 @@ function AddForm({ dispatch }: { dispatch: Dispatch<Action> }) {
 type FilterBarProps = {
   filter: Filter
   counts: Record<Filter, number>
+  canUndo: boolean
   dispatch: Dispatch<Action>
 }
 
-function FilterBar({ filter, counts, dispatch }: FilterBarProps) {
+function FilterBar({ filter, counts, canUndo, dispatch }: FilterBarProps) {
   return (
     <div style={{ display: 'flex', gap: 8, margin: '12px 0' }}>
       {FILTERS.map((f) => (
@@ -49,6 +49,7 @@ function FilterBar({ filter, counts, dispatch }: FilterBarProps) {
         </button>
       ))}
       <button onClick={() => dispatch({ type: 'clearDone' })}>Clear done</button>
+      <button onClick={() => dispatch({ type: 'undo' })} disabled={!canUndo}>Undo</button>
     </div>
   )
 }
@@ -77,7 +78,7 @@ export default function App() {
     <main>
       <h1>Task Manager</h1>
       <AddForm dispatch={dispatch} />
-      <FilterBar filter={state.filter} counts={counts} dispatch={dispatch} />
+      <FilterBar filter={state.filter} counts={counts} canUndo={state.past.length > 0} dispatch={dispatch} />
       <TaskList tasks={visibleTasks} dispatch={dispatch} />
     </main>
   )
